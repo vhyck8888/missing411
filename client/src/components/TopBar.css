@@ -1,0 +1,51 @@
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1e1e1e;
+  padding: 1rem 2rem;
+  color: white;
+  border-bottom: 1px solid #333;
+}
+
+.logo-home {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.home-button {
+  background: none;
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.search-container {
+  flex: 1;
+  margin: 0 2rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.login-button,
+.logout-button {
+  margin-left: 1rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.welcome-message {
+  margin-right: 0.5rem;
+}
