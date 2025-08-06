@@ -50,7 +50,8 @@ router.post('/signup', async (req, res) => {
     // Using query param format for frontend route
     // live const verificationLink = `https://yourappdomain.com/verify?token=${token}`;
 
-    const verificationLink = `http://localhost:3000/verify?token=${token}`;
+    const verificationLink = `${process.env.FRONTEND_URL}/verify?token=${token}`;
+
 
     await transporter.sendMail({
       to: newUser.email,
@@ -150,9 +151,9 @@ router.post('/login', async (req, res) => {
 
    res.cookie('token', token, {
   httpOnly: true,
-  secure: isProduction,     // ✅ HTTPS-only in production
-  sameSite: isProduction ? 'None' : 'Lax',  // ✅ Cross-origin support in production
-  maxAge: 24 * 60 * 60 * 1000  // ✅ 1 day
+  secure: isProduction,
+  sameSite: isProduction ? 'None' : 'Lax', 
+  maxAge: 24 * 60 * 60 * 1000  
 });
 
 res.status(200).json({
