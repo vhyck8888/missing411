@@ -18,9 +18,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [commentText, setCommentText] = useState('');
   const [isCommenting, setIsCommenting] = useState(false);
-
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchCases = async () => {
       try {
@@ -52,7 +50,6 @@ function App() {
 
     fetchProfile();
   }, []);
-
   const login = (userData) => setUser(userData);
 
   const logout = async () => {
@@ -186,3 +183,4 @@ function App() {
 }
 
 export default App;
+//add some notes here
