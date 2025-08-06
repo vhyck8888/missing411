@@ -7,9 +7,9 @@ import HomePage from './pages/HomePage';
 import './App.css';
 import './index.css';
 import VerifyEmail from './pages/VerifyEmail';
-import DateTimeDisplay from './components/DateTimeDisplay'
+import DateTimeDisplay from './components/DateTimeDisplay';
 
-
+const API = import.meta.env.VITE_API_URL; 
 
 function App() {
   const [user, setUser] = useState(null);
@@ -24,7 +24,7 @@ function App() {
   useEffect(() => {
     const fetchCases = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/cases');
+        const res = await fetch(`${API}/api/cases`);
         const data = await res.json();
         setCases(data);
       } catch (err) {
@@ -36,39 +36,37 @@ function App() {
   }, []);
 
   useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/profile', {
-        credentials: 'include', // lets send cookie
-      });
-      if (res.ok) {
-        const userData = await res.json();
-        setUser(userData);
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch(`${API}/api/auth/profile`, {
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const userData = await res.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
       }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
+    };
 
-  fetchProfile();
-}, []);
-
+    fetchProfile();
+  }, []);
 
   const login = (userData) => setUser(userData);
 
   const logout = async () => {
-  try {
-    await fetch('http://localhost:5000/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
-  } catch (err) {
-    console.error('Logout error:', err);
-  }
-  setUser(null);
-  setSelectedCase(null);
-};
-
+    try {
+      await fetch(`${API}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+    setUser(null);
+    setSelectedCase(null);
+  };
 
   const onHomeClick = () => {
     setSelectedCase(null);
@@ -76,42 +74,41 @@ function App() {
   };
 
   const handleSubmitComment = async () => {
-  if (!commentText.trim()) {
-    alert("Please enter a comment before submitting.");
-    return;
-  }
-
-  try {
-    const res = await fetch(`http://localhost:5000/api/cases/${selectedCase._id}/comment`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text: commentText,
-        userId: user?._id || null,
-      }),
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to submit comment.');
+    if (!commentText.trim()) {
+      alert('Please enter a comment before submitting.');
+      return;
     }
 
-    const updatedCase = await res.json();
+    try {
+      const res = await fetch(`${API}/api/cases/${selectedCase._id}/comment`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: commentText,
+          userId: user?._id || null,
+        }),
+      });
 
-    setCases(prev =>
-      prev.map(c => (c._id === updatedCase._id ? updatedCase : c))
-    );
+      if (!res.ok) {
+        throw new Error('Failed to submit comment.');
+      }
 
-    setSelectedCase(updatedCase);
+      const updatedCase = await res.json();
 
-    alert("Comment added!");
-    setCommentText('');
-    setIsCommenting(false);
-  } catch (err) {
-    console.error('Error submitting comment:', err);
-    alert('Failed to submit comment.');
-  }
-};
+      setCases((prev) =>
+        prev.map((c) => (c._id === updatedCase._id ? updatedCase : c))
+      );
 
+      setSelectedCase(updatedCase);
+
+      alert('Comment added!');
+      setCommentText('');
+      setIsCommenting(false);
+    } catch (err) {
+      console.error('Error submitting comment:', err);
+      alert('Failed to submit comment.');
+    }
+  };
 
   const handleCancel = () => {
     setCommentText('');
@@ -121,10 +118,9 @@ function App() {
   const handleKeyDown = (e) => {
     if ((e.key === 'Enter' && !e.shiftKey) || (e.key === 'Enter' && e.ctrlKey)) {
       e.preventDefault();
-      handleSubmitSolution();
+      handleSubmitComment();
     }
   };
-  
 
   return (
     <div className="app-container">
@@ -139,15 +135,13 @@ function App() {
 
       {user && (
         <div className="nav-links">
-          
           <Link to="/submit">Submit Case</Link>
           <Link to="/cases">View Cases</Link>
 
-           <div className="nav-datetime">
-          <DateTimeDisplay />
+          <div className="nav-datetime">
+            <DateTimeDisplay />
+          </div>
         </div>
-        </div>
-        
       )}
 
       <Routes>
@@ -162,7 +156,7 @@ function App() {
               setCommentText={setCommentText}
               isCommenting={isCommenting}
               setIsCommenting={setIsCommenting}
-               handleSubmitComment={handleSubmitComment}
+              handleSubmitComment={handleSubmitComment}
               handleCancel={handleCancel}
               handleKeyDown={handleKeyDown}
               cases={cases}

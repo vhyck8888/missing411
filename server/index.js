@@ -22,8 +22,21 @@ const MONGO_URI = process.env.MONGO_URI || 'your_mongo_connection_string_here';
 
 app.use(cookieParser());
 
+// Allowed frontend origins for CORS
+const allowedOrigins = [
+  'http://localhost:5173',               // Local frontend
+  'https://missing411-2aa6.vercel.app'  // Deployed frontend on Vercel
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // Allow requests with no origin (e.g. curl, Postman)
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true,
 }));
 
@@ -33,8 +46,8 @@ app.use(express.urlencoded({ extended: true }));
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-}).then(() => console.log(' Connected to MongoDB'))
-  .catch(err => console.error(' MongoDB connection error:', err));
+}).then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -57,6 +70,7 @@ app.listen(PORT, () => {
 
 
 
+
 {/*
 
   db.cases.updateMany(
@@ -73,7 +87,7 @@ PATCH http://localhost:5000/api/auth/object id/role
   "role": "admin"
 }
 
-
+mongodb
 db.cases.updateOne(
   { _id: ObjectId(' their id ') },
   { $set: { pending: false } }
