@@ -20,12 +20,14 @@ const AuthModal = ({ onClose, onLoginSuccess }) => {
     setSignupData({ ...signupData, [e.target.name]: e.target.value });
   };
 
- const handleLoginSubmit = async () => {
+ const API_URL = import.meta.env.VITE_API_URL;
+
+const handleLoginSubmit = async () => {
   try {
-    const response = await fetch("http://localhost:5000/api/auth/login", {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: 'include',
+      credentials: 'include', // ✅ ensures cookies are sent/stored
       body: JSON.stringify(loginData),
     });
 
@@ -44,42 +46,38 @@ const AuthModal = ({ onClose, onLoginSuccess }) => {
   }
 };
 
+const handleSignupSubmit = async () => {
+  try {
+    const response = await fetch(`${API_URL}/api/auth/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: 'include', // ✅ only needed if the server sets a cookie on signup
+      body: JSON.stringify(signupData),
+    });
 
+    const result = await response.json();
 
-  
-  
+    if (response.ok) {
+      alert(result.message);
 
-  const handleSignupSubmit = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(signupData),
-});
+      setSignupData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        username: "",
+        password: "",
+      });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        alert(result.message);
-
-        setSignupData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          username: "",
-          password: "",
-        });
-
-        setIsLogin(true);
-
-      } else {
-        alert(result.message || "Signup failed.");
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert("An error occurred during signup.");
+      setIsLogin(true);
+    } else {
+      alert(result.message || "Signup failed.");
     }
-  };
+  } catch (error) {
+    console.error("Signup error:", error);
+    alert("An error occurred during signup.");
+  }
+};
+
 
   return (
     <div className="modal-overlay">

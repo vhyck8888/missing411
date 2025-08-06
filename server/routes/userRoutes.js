@@ -6,6 +6,9 @@ import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+
 const router = express.Router();
 
 router.post('/signup', async (req, res) => {
@@ -145,11 +148,11 @@ router.post('/login', async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '1d' }
     );
 
-    res.cookie('token', token, {
+   res.cookie('token', token, {
   httpOnly: true,
-  secure: false,
-  sameSite: 'Strict',
-  maxAge: 24 * 60 * 60 * 1000
+  secure: isProduction,     // ✅ HTTPS-only in production
+  sameSite: isProduction ? 'None' : 'Lax',  // ✅ Cross-origin support in production
+  maxAge: 24 * 60 * 60 * 1000  // ✅ 1 day
 });
 
 res.status(200).json({
