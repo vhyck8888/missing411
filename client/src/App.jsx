@@ -9,6 +9,9 @@ import './index.css';
 import VerifyEmail from './pages/VerifyEmail';
 import DateTimeDisplay from './components/DateTimeDisplay';
 
+
+void 0;
+
 const API = import.meta.env.VITE_API_URL; 
 
 function App() {
